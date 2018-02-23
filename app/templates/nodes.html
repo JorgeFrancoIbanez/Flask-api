@@ -1,0 +1,9 @@
+{% extends "base.html" %}
+
+{% block content %}
+<ul>
+    {% for node in nodes%}
+    <li><a href="/node/{{ node.id}}">{{ node.name }}</a></li>
+    {% endfor %}
+</ul>
+{% endblock %}

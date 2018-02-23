@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    {% if title %}
+    <meta charset="UTF-8">
+    <title>{{title}} - app</title>
+    {% else %}
+    <meta charset="UTF-8">
+    <title>Improvisado - app</title>
+    {% endif %}
+</head>
+<body>
+
+    <div>
+        App:
+        <a href="{{ url_for('index') }}">Home</a>
+        <a href="{{ url_for('login') }}">Login</a>
+        <a href="{{ url_for('nodes') }}">Nodes</a>
+        <a href="{{ url_for('cams') }}">Monitor dual</a>
+    </div>
+    <hr>
+    {% with messages = get_flashed_messages() %}
+    {% if messages %}
+    <ul>
+        {% for message in messages %}
+        <li>{{ message }}</li>
+        {% endfor %}
+    </ul>
+    {% endif %}
+    {% endwith %}
+
+
+    <h1>{{ title }}!</h1>
+
+    {% block content %} {% endblock %}
+
+</body>
+</html>

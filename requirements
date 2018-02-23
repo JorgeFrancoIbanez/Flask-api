@@ -1,0 +1,12 @@
+requests
+$ pipenv install requests
+
+
+beautifulsoup4
+pip install beautifulsoup4
+You may have to use the full path:
+
+C:\Python27\Scripts\pip install beautifulsoup4
+or even
+
+C:\Python27\Scripts\pip.exe install beautifulsoup4

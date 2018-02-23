@@ -1,0 +1,19 @@
+
+    <table id="sample">
+        <tr>
+            <th>ID</th>
+            <th>Date of creation</th>
+            <th>User ID</th>
+            <th>Message</th>
+        </tr>
+        {% for data_item in data_table %}
+        <tr>
+            <td>{{ data_item.id }}</td>
+            <td>{{ data_item.creation_date }}</td>
+            <td>{{ data_item.user_id }}</td>
+            <td>{{ data_item.message}}</td>
+        </tr>
+        {% endfor %}
+    </table>
+
+    <script>document.write('<script src="{{url_for('static', filename='js/table.js') }}">\x3C/script>')</script>
