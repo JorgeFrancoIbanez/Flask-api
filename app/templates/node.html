@@ -1,8 +1,16 @@
 {% extends "base.html" %}
 
 {% block content %}
-
+<div>
+    <div>Owner: {{ user_info.username}}</div>
+    <div>
+        {% if pool %}
+            Pool: <a href="/pool/{{ pool.id }}">{{ pool.name }}</a>
+        {% else %}
+            Pool: No pool
+        {% endif %}
+    </div>
+</div>
 {% include "partials/table.html" %}
-{% include "partials/scripts.html" %}
 
 {% endblock %}

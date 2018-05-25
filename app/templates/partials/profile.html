@@ -1,0 +1,13 @@
+{% for i in user_profile %}
+<div class="card">
+  <!--<img src="{{i.profile_image}}" alt="John" style="width:100%">-->
+  <h1>{{i.username}}</h1>
+  <p class="title">This is a test</p>
+  <!--<p>Universidad tecnologica de bolivar</p>-->
+  <!--<a href="#"><i class="fa fa-dribbble"></i></a>-->
+  <!--<a href="#"><i class="fa fa-twitter"></i></a>-->
+  <!--<a href="#"><i class="fa fa-linkedin"></i></a>-->
+  <!--<a href="#"><i class="fa fa-facebook"></i></a>-->
+  <p><button>{{ i.email }}</button></p>
+</div>
+{% endfor %}

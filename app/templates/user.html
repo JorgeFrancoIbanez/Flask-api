@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<div class="table" style="width: 100%; overflow: hidden;">
+
+    <div style="margin-left:5%; width: 40%; float: left;">
+        <h2>
+            Pools
+        </h2>
+        {% include "partials/pools.html" %}
+    </div>
+
+<!---->
+    <div style="margin-left:5%; width: 40%; float: left;">
+        <h2>
+            Nodes
+        </h2>
+        {% include "partials/nodes.html" %}
+    </div>
+</div>
+
+{% endblock%}

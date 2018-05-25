@@ -1,0 +1,14 @@
+<table class="table table-striped">
+    <thead class="thead-dark">
+        <tr>
+            <th>Pool name</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            {% for pool in pools%}
+                <td><a href="/pool/{{ pool.id}}" class="text-blue">{{ pool.name }}</a></td>
+            {% endfor %}
+       </tr>
+    </tbody>
+</table>
