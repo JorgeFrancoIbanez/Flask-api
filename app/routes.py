@@ -7,13 +7,14 @@ from werkzeug.datastructures import CombinedMultiDict
 
 from app import app
 from app import db
-from app.forms import DetachNode, LoginForm, ObjectForm, RegistrationForm
+from app.forms import AttachNode, DetachNode, LoginForm, ObjectForm, RegistrationForm
 from app.utils.convert_json import data_to_json
 from app.utils.check_if_exist import check_node, check_user
 from app.models import Node, Object, Pool, Post, User
 from flask import flash, jsonify, redirect, render_template, request, send_file, url_for
 from flask_login import current_user, login_required, login_user, logout_user
 from flask_qrcode import QRcode
+from sqlalchemy.sql import func
 from werkzeug.utils import secure_filename
 
 from werkzeug.urls import url_parse
@@ -166,15 +167,48 @@ def pool(pool_id, obj=None):
 
 app.config["UPLOAD_FOLDER"] = "uploads"
 
+@app.route('/pool/<pool_id>/attach/', methods=['POST'])
+def attachNode(pool_id):
+    attachForm = AttachNode()
+    print 'data from attachNode',attachForm.data['nodes']
+    node = Node.query.filter_by(id=attachForm.data['nodes']).first()
+    node.pool_id = pool_id
+    print 'data', node.pool_id
+    db.session.add(node)
+    db.session.commit()
+    flash('Node was attached succesfully to the pool.', 'info')
+    return redirect(url_for('pools'))
+
+
+@app.route('/pool/<pool_id>/detach/', methods=['POST'])
+def detachNode(pool_id):
+    detachForm = DetachNode()
+    print 'data from detachNode',detachForm.data['nodes']
+    node = Node.query.filter_by(id=detachForm.data['nodes']).first()
+    node.pool_id = None
+    print 'data', node.pool_id
+    db.session.add(node)
+    db.session.commit()
+    flash('Node was detached succesfully from the pool.', 'info')
+    return redirect(url_for('pools'))
+
 
 @app.route('/pools', methods=['GET', 'POST'])
 def pools():
+    attachForm = AttachNode()
+    # print attachForm
+    detachForm = DetachNode()
+    count_nodes={}
     if request.method == 'GET':
         pool_data = data_to_json(Pool.query.all())
+        for pool in pool_data:
+            print pool['id']
+            pool['count']=len(Node.query.filter_by(pool_id=pool['id']).all())
+            print pool['count'], pool_data
         #### a call to count the numbers of nodes in the pool ###
-        # print pool_data
-        form = DetachNode()
-        return render_template('pools.html', form=form, title='List of pools available', pools=pool_data)
+        return render_template('pools.html', detachForm=detachForm, attachForm=attachForm,  title='List of pools available', pools=pool_data)
+
+
     # if request.method == 'POST':
     #     data = json.loads(request.data)
     #     print user_id, data
@@ -192,8 +226,11 @@ def user_pools(user_id):
     if request.method == 'GET':
         # pool_data = UserPool.query.filter_by(user_id=user_id).first()
         user = User.query.filter_by(id=user_id).first()
-        form = DetachNode()
-        return render_template('pools.html', form=form, title='List of pools available for {}'.format(user.username), posts=pool_data)
+        attachForm = AttachNode()
+        print attachForm
+        detachForm = DetachNode()
+        return render_template('pools.html', detachForm=detachForm, attachForm=attachForm, title='List of pools available for {}'.format(user.username))
+        # return render_template('pools.html', detachForm=detachForm, attachForm=attachForm, title='List of pools available for {}'.format(user.username), posts=pool_data)
     # if request.method == 'POST':
     #     data = json.loads(request.data)
     #     print user_id, data

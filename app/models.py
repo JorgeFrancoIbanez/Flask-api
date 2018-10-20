@@ -63,7 +63,8 @@ class Node(db.Model):
 class Object(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     message = db.Column(db.String(140))
-    timestamp = db.Column(db.DateTime(timezone=True), index=True, server_default=func.now())
+    pool_id = db.Column(db.Integer, db.ForeignKey('pool.id'))
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
 
     def __init__(self, name, data):
         self.name = name

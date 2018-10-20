@@ -6,7 +6,11 @@
             </div>
             <div class="modal-body">
                 Please select one of your available nodes:
-                 {{ form.nodes }}
+                <form method="POST" action="/pool/{{ pool.id }}/detach/">
+                    {{attachForm.csrf_token}}
+                    {{ detachForm.nodes }}
+                    <input type="submit">
+                </form>
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
