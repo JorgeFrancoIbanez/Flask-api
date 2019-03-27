@@ -9,9 +9,9 @@ from app import app
 from app import db
 from app.forms import AttachNode, DetachNode, LoginForm, ObjectForm, RegistrationForm
 from app.utils.convert_json import data_to_json
-from app.utils.check_if_exist import check_node, check_user
+from app.utils.check_if_exist import check_node, check_user, check_node_pool
 from app.models import Node, Object, Pool, Post, User
-from flask import flash, jsonify, redirect, render_template, request, send_file, url_for
+from flask import flash, jsonify, redirect, render_template, request, Response, send_file, url_for
 from flask_login import current_user, login_required, login_user, logout_user
 from flask_qrcode import QRcode
 from sqlalchemy.sql import func
@@ -30,6 +30,11 @@ qrcode = QRcode(app)
 @app.route('/')
 @app.route('/index')
 def index():
+    """
+    Web app index.
+    :return: Template
+    :rtype: html
+    """
     title = 'Cam application'
     if current_user.is_authenticated:
         return render_template('index.html', title=title)
@@ -39,7 +44,11 @@ def index():
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
-    print "comes"
+    '''
+    Login.
+    :return:
+    :rtype:
+    '''
     if current_user.is_authenticated:
         print "authenticated"
         return redirect(url_for('index'))
@@ -59,6 +68,11 @@ def login():
 
 @app.route('/logout')
 def logout():
+    """
+    Log out, This method will redirect to the login page.
+    :return:
+    :rtype:
+    """
     logout_user()
     return redirect(url_for('index'))
 
@@ -66,17 +80,62 @@ def logout():
 @app.route('/monitor-test')
 @login_required
 def cams():
+    """
+    Monitor the last 15 entries of all projects.
+    :return: data
+    :rtype: json
+    """
     posts = Post.query.limit(15).all()
     data = data_to_json(posts)
     return render_template('table.html', title='Camera monitoring system', data_table=data)
 
 
 @app.route('/nodes/<user_id>', methods=['GET', 'POST'])
+@login_required
 def nodes(user_id):
+    """
+    Add node to a specific user
+    :param user_id: User id of the actual session in app
+    :type user_id: Integer
+    :return: String depending on the server answer.
+    :rtype: String
+    """
     if request.method == 'GET':
         data = data_to_json(Node.query.limit(15).all())
-        print jsonify(data)
         return render_template('nodes.html', title='List of nodes availables', nodes=data)
+    if request.method == 'POST':
+        data = json.loads(request.data)
+        if not check_node(data):
+            n = Node(name=data["name"], user_id=user_id, mac=data["hash"])
+            db.session.add(n)
+            db.session.commit()
+            return 'node successfully added'
+        else:
+            return 'node already exist'
+
+
+@app.route('/node/<node_id>', methods=['GET', 'POST'])
+@login_required
+def node(node_id):
+    """
+    Show node information
+    :param node_id: Node ID to be displayed
+    :type node_id: Integer
+    :returns:
+        GET:
+            :type
+    :rtype:
+    """
+    if request.method == 'GET':
+        data = Node.query.filter(Node.id == node_id).first()
+        data_user = User.query.filter(User.id == data.user_id).first()
+        print data
+        if data.pool_id:
+            data_pool = Pool.query.filter(Pool.id == data.pool_id).first()
+            data_post = data_to_json(Post.query.filter(Post.node_id == data.id).all())
+            return render_template('node.html', nodes=data, pool=data_pool, data_table=data_post, title='Node {}'.format(data.name), user_info=data_user)
+        else:
+            return render_template('node.html', nodes=data, title='Node {}'.format(data.name), user_info=data_user)
     if request.method == 'POST':
         data = json.loads(request.data)
         print user_id, data
@@ -89,31 +148,8 @@ def nodes(user_id):
             return 'node already exist'
 
 
-@app.route('/node/<node_id>', methods=['GET', 'POST'])
-def node(node_id):
-    if request.method == 'GET':
-        data = Node.query.filter(Node.id == node_id).first()
-        data_user = User.query.filter(User.id == data.user_id).first()
-        print data
-        if data.pool_id:
-            data_pool = Pool.query.filter(Pool.id == data.pool_id).first()
-            data_post = data_to_json(Post.query.filter(Post.node_id == data.id).all())
-            return render_template('node.html', nodes=data, pool=data_pool, data_table=data_post, title='Node {}'.format(data.name), user_info=data_user)
-        else:
-            return render_template('node.html', nodes=data, title='Node {}'.format(data.name), user_info=data_user)
-    # if request.method == 'POST':
-        # data = json.loads(request.data)
-        # print user_id, data
-        # if not check_node(data["mac"]):
-        #     n = Node(name=data["name"], user_id=user_id, mac=data["mac"])
-        #     db.session.add(n)
-        #     db.session.commit()
-        #     return 'node successfully added'
-        # else:
-        #     return 'node already exist'
-
-
 @app.route('/pool/<pool_id>/nodes', methods=['GET', 'POST'])
+@login_required
 def nodes_on_pool(pool_id, user_id):
     if request.method == 'GET':
         data = data_to_json(pool_id.query.limit(15).all())
@@ -132,13 +168,21 @@ def nodes_on_pool(pool_id, user_id):
 
 
 @app.route('/pool/<pool_id>', methods=['GET', 'POST'])
+@login_required
 def pool(pool_id, obj=None):
     # user_data = data_to_json(UserPool.query.filter(Pool.id == pool_id).limit(15).all())
     pool_data = Pool.query.filter_by(id=pool_id).first()
     post_data = data_to_json(Post.query.filter(Pool.id == pool_id).limit(15).all())
     node_data = data_to_json(Node.query.filter(Node.pool_id == pool_id).limit(15).all())
     form = ObjectForm(obj)
-    print app.instance_path
+    print post_data
+    for i in post_data:
+        # print i
+        # print i["message"]
+        # i["message"] = json.dumps(i["message"])
+        i["message"] = i["message"].replace('u\'', '\'').replace('\'', "\"")
+        print str(i["message"])
+    # print app.instance_path
     if form.validate_on_submit():
         f = form.photo.data
         filename = secure_filename(f.filename)
@@ -152,7 +196,7 @@ def pool(pool_id, obj=None):
     #     if node["is_on_pool"] == True:
     #         if pool_id == node["pool_id"]:
     #             print node
-    return render_template('pool.html', data_table=post_data, form=form, title=pool_data.name, nodes=node_data)
+    return render_template('pool.html', pool_id=pool_id, data_table=post_data, form=form, title=pool_data.name, nodes=node_data)
     # if request.method == 'POST':
     #     data = json.loads(request.data)
     #     print user_id, data
@@ -181,6 +225,7 @@ def attachNode(pool_id):
 
 
 @app.route('/pool/<pool_id>/detach/', methods=['POST'])
+@login_required
 def detachNode(pool_id):
     detachForm = DetachNode()
     print 'data from detachNode',detachForm.data['nodes']
@@ -194,6 +239,7 @@ def detachNode(pool_id):
 
 
 @app.route('/pools', methods=['GET', 'POST'])
+@login_required
 def pools():
     attachForm = AttachNode()
     # print attachForm
@@ -222,6 +268,7 @@ def pools():
 
 
 @app.route('/pools/<user_id>', methods=['GET', 'POST'])
+@login_required
 def user_pools(user_id):
     if request.method == 'GET':
         # pool_data = UserPool.query.filter_by(user_id=user_id).first()
@@ -242,6 +289,40 @@ def user_pools(user_id):
     #     else:
     #         return 'node already exist'
 
+@app.route('/post/<hash>', methods=['GET', 'POST'])
+def post(hash=None):
+    if request.method == 'POST':
+        # print(request.data)
+        # data = json.loads(request.data.decode("utf-8"))
+        # print(data["hash"])
+        # if check_node(data):
+        #     node = Node.query.filter(Node.mac == data["hash"]).first()
+        #     print(node.pool_id)
+        #     if node.pool_id:
+        #         p = Post(message=str(data), node_id=node.id)
+        #         db.session.add(p)
+        #         db.session.commit()
+        #         return 'post successfully added'
+        #     else:
+        #         return 'No pool'
+        # return 'no node to post'
+        # print(request.data)
+        data = json.loads(request.data)
+        print data
+        print hash
+        if check_node(hash):
+            print(data)
+            node = Node.query.filter(Node.mac == hash).first()
+            print(node.pool_id)
+        else:
+            return 'No node exist'
+        if node.pool_id:
+            p = Post(message=str(data), node_id=node.id)
+            db.session.add(p)
+            db.session.commit()
+            return 'post successfully added'
+        else:
+            return 'No pool'
 
 @app.route('/qrcode', methods=['GET'])
 def get_qrcode():
@@ -260,6 +341,7 @@ def register():
     form = RegistrationForm()
     if form.validate_on_submit():
         user = User(username=form.username.data, email=form.email.data)
+
         user.set_password(form.password.data)
         db.session.add(user)
         db.session.commit()
@@ -323,14 +405,18 @@ def upload():
 @app.route('/users', methods=['GET', 'POST'])
 def users():
     if request.method == 'GET':
+
         data = data_to_json(User.query.limit(15).all())
-        print jsonify(data)
-        return render_template('users.html', title='List of nodes availables', nodes=data)
+        # print "asdasd"+str(jsonify(data))
+        return json.dumps(data)
     if request.method == 'POST':
-        user = User.query.filter_by(email=request.data)
-        for i in user:
-            user_id = i
-        return jsonify(user_id.id)
+        try:
+            user = User.query.filter_by(email=request.data)
+            for i in user:
+                user_id = i
+            return jsonify(user_id.id)
+        except:
+            return "404"
 
 
 @app.route('/user/<user_id>', methods=['GET', 'POST'])
@@ -371,50 +457,20 @@ def node_profile(user_id, node_id):
             return 'Error 404'
         data = data_to_json(Post.query.filter(Post.node_id == node_id).all())
         return render_template('node.html', title=node_data.name, data_table=data)
-    if request.method == 'POST':
-
-        print 'hacer algo'
-        return 'todo...'
 
 
-# @app.route('/user/<user_id>/upload', methods=['GET', 'POST'])
-# def upload_file(user_id):
-#     if request.method == 'POST':
-#         file = request.files['file']
-#         User.query().filter_by(id=user_id).update(profile_image=file.read())
-#
-#         app.db.session.commit()
-#     return '''
-#         <!doctype html>
-#         <title>Upload new File</title>
-#         <h1>Upload new File</h1>
-#         <form action="" method=post enctype=multipart/form-data>
-#           <p><input type=file name=file>
-#              <input type=submit value=Upload>
-#         </form>
-#         '''
-#     # if request.method == 'POST':
-#     #     # check if the post request has the file part
-#     #     if 'file' not in request.files:
-#     #         flash('No file part')
-#     #         return redirect(request.url)
-#     #     file = request.files['file']
-#     #     # if user does not select file, browser also
-#     #     # submit a empty part without filename
-#     #     if file.filename == '':
-#     #         flash('No selected file')
-#     #         return redirect(request.url)
-#     #     if file and allowed_file(file.filename):
-#     #         filename = secure_filename(file.filename)
-#     #         file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
-#     #         return redirect(url_for('upload_file',
-#     #                                 filename=filename))
-#     # return '''
-#     # <!doctype html>
-#     # <title>Upload new File</title>
-#     # <h1>Upload new File</h1>
-#     # <form action="" method=post enctype=multipart/form-data>
-#     #   <p><input type=file name=file>
-#     #      <input type=submit value=Upload>
-#     # </form>
-#     # '''
+@app.route("/get-file/<id>")
+# @app.route("/pool/<id>/content")
+def pooldata(id):
+    pool_data = Pool.query.filter_by(id=id).first()
+    print pool_data.name
+    post_data = data_to_json(Post.query.filter(Pool.id == id).all())
+    for i in post_data:
+        i["message"] = i["message"].replace('u\'', '\'')
+        del i["_sa_instance_state"]
+        print i["message"]
+    # return Response(json.loads(post_data,indent=4),
+    return Response(json.dumps(post_data, indent=4, sort_keys=True),
+                       mimetype="text/plain",
+                       headers={"Content-Disposition":
+                                    "attachment;filename="+str(pool_data.name).replace(' ', '_')+".txt"})
