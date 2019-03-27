@@ -13,7 +13,7 @@ from app.utils.check_if_exist import check_node, check_user, check_node_pool
 from app.models import Node, Object, Pool, Post, User
 from flask import flash, jsonify, redirect, render_template, request, Response, send_file, url_for
 from flask_login import current_user, login_required, login_user, logout_user
-from flask_qrcode import QRcode
+# from flask_qrcode import QRcode
 from sqlalchemy.sql import func
 from werkzeug.utils import secure_filename
 
@@ -24,7 +24,7 @@ from base64 import b64encode, b64decode
 from werkzeug.security import generate_password_hash, check_password_hash
 
 
-qrcode = QRcode(app)
+# qrcode = QRcode(app)
 
 
 @app.route('/')
@@ -323,15 +323,15 @@ def post(hash=None):
             return 'post successfully added'
         else:
             return 'No pool'
-
-@app.route('/qrcode', methods=['GET'])
-def get_qrcode():
-    # please get /qrcode?data=<qrcode_data>
-    data = request.args.get('data', '')
-    return send_file(
-        qrcode(data, mode='raw'),
-        mimetype='image/png'
-    )
+#
+# @app.route('/qrcode', methods=['GET'])
+# def get_qrcode():
+#     # please get /qrcode?data=<qrcode_data>
+#     data = request.args.get('data', '')
+#     return send_file(
+#         qrcode(data, mode='raw'),
+#         mimetype='image/png'
+#     )
 
 
 @app.route('/register', methods=['GET', 'POST'])

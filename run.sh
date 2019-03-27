@@ -10,7 +10,7 @@ if [ ! -d "$virtualenv" ]; then
 	echo virtualenv created;
 	source $virtualenv/bin/activate;
 	pip install --upgrade setuptools
-        sudo apt-get install libmysqlclient-dev python-dev
+    sudo apt-get install libmysqlclient-dev python-dev libfreetype6-dev libxft-dev -y
 	pip install -r requirements.txt
 	echo "requirements were installed";
 else
