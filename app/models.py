@@ -50,10 +50,9 @@ class Node(db.Model):
     timestamp = db.Column(db.DateTime(timezone=True), index=True, server_default=func.now())
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
 
-    def __init__(self, mac, name, pool_id, user_id):
+    def __init__(self, mac, name, user_id):
         self.mac = mac
         self.name = name
-        self.pool_id = pool_id
         self.user_id = user_id
 
     def __repr__(self):
@@ -63,7 +62,8 @@ class Node(db.Model):
 class Object(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     message = db.Column(db.String(140))
-    timestamp = db.Column(db.DateTime(timezone=True), index=True, server_default=func.now())
+    pool_id = db.Column(db.Integer, db.ForeignKey('pool.id'))
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
 
     def __init__(self, name, data):
         self.name = name

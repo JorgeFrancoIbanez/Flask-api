@@ -13,7 +13,7 @@
         <tr>
             {% for pool in pools%}
                 <td><a href="/pool/{{ pool.id}}" class="text-blue">{{ pool.name }}</a></td>
-                <td>#</td>
+                <td> {{ pool.count }}</td>
                 <td><a href="#" class="btn btn-primary pull-right" data-toggle="modal" data-target="#attach{{pool.id}}">Attach node</a></td>
                 <td><a href="#" class="btn btn-danger pull-left" data-toggle="modal" data-target="#detach{{pool.id}}">detach node</a></td>
                 {% include "partials/modal/attach_node.html" %}

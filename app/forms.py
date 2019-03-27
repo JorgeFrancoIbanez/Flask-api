@@ -6,8 +6,21 @@ from wtforms import BooleanField, FileField, PasswordField, SelectField, StringF
 from wtforms.validators import DataRequired, Email, EqualTo, ValidationError
 
 
+class AttachNode(FlaskForm):
+    nodes = SelectField()
+    action = StringField('attach')
+    submit = SubmitField('Attach Node')
+
+    def __init__(self):
+        super(AttachNode, self).__init__()
+        self.nodes.choices = [(g.id, g.name) for g in Node.query.filter(Node.pool_id == None,
+                                                      Node.user_id == current_user.id).order_by('name')]
+
+
 class DetachNode(FlaskForm):
     nodes = SelectField()
+    action = StringField('detach')
+    submit = SubmitField('Detach Node')
 
     def __init__(self):
         super(DetachNode, self).__init__()
@@ -24,7 +37,6 @@ class LoginForm(FlaskForm):
 
 class ObjectForm(FlaskForm):
     name = StringField('Name', validators=[DataRequired()])
-    qrcode = FileField(validators=[FileRequired()])
     submit = SubmitField('Add object')
 
 

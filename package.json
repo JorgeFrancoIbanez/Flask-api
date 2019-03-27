@@ -1,0 +1,24 @@
+{
+  "name": "server-api",
+  "version": "1.0.0",
+  "description": "Collaborative API",
+  "main": "index.js",
+  "dependencies": {},
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/JorgeFrancoIbanez/Flask-api.git"
+  },
+  "keywords": [
+    "camera"
+  ],
+  "author": "Jorge Franco I",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/JorgeFrancoIbanez/Flask-api/issues"
+  },
+  "homepage": "https://github.com/JorgeFrancoIbanez/Flask-api#readme"
+}

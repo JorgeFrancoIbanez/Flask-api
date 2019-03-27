@@ -3,7 +3,7 @@ import argparse
 from app import db
 from app.models import User
 
-email="jorge.franco@gmail.com"
+email="jorgefrancoibanez@gmail.com"
 password="qweqwe123123"
 u = User.query.filter(User.email == email).first()
 
@@ -12,3 +12,6 @@ u.set_password(password)
 print(u.email, 'password: \n', u.password_hash)
 db.session.add(u)
 db.session.commit()
+
+
+#pbkdf2:sha256:50000$2NIgPkYY$b6805afa62f65a35feb4a801d87018e121c76c6cdaed236f75124cbfecefa0ea

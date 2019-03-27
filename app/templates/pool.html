@@ -1,7 +1,8 @@
 {% extends "base.html" %}
 
 {% block content %}
-<!--<form action="" method="post">-->
+
+    <!--<form action="" method="post">-->
     <!--<p>-->
         <!--{{ form.name.label }}<br>-->
         <!--{{ form.name(size=32, ) }}<br>-->
@@ -14,46 +15,59 @@
     <!--</p>-->
     <!--<p>{{ form.submit() }}</p>-->
     <!--{{ form.hidden_tag() }}-->
-<!--</form>-->
-<!--<img id="drag1" draggable="true"-->
-<!--ondragstart="drag(event)" src="{{ qrcode(form.name.label) }}">-->
-<!--<div  ondrop="drop(event)" ondragover="allowDrop(event)" id="div1" style="border:1px solid black;float: left; width: 250px;height: 250px;display: block;">-->
+    <!--</form>-->
+    <!--<img id="drag1" draggable="true"-->
+    <!--ondragstart="drag(event)" src="{{ qrcode(form.name.label) }}">-->
+    <!--<div  ondrop="drop(event)" ondragover="allowDrop(event)" id="div1" style="border:1px solid black;float: left; width: 250px;height: 250px;display: block;">-->
 
-<!--</div>-->
-<!--<script>-->
-    <!--function allowDrop(ev) {-->
-    <!--ev.preventDefault();-->
-<!--}-->
+    <!--</div>-->
+    <!--<script>-->
+        <!--function allowDrop(ev) {-->
+        <!--ev.preventDefault();-->
+    <!--}-->
 
-<!--function drag(ev) {-->
-    <!--ev.dataTransfer.setData("text", ev.target.id);-->
-<!--}-->
+    <!--function drag(ev) {-->
+        <!--ev.dataTransfer.setData("text", ev.target.id);-->
+    <!--}-->
 
-<!--function drop(ev) {-->
-    <!--ev.preventDefault();-->
-    <!--var data = ev.dataTransfer.getData("text");-->
-    <!--ev.target.appendChild(document.getElementById(data));-->
-<!--}-->
-<!--</script>-->
+    <!--function drop(ev) {-->
+        <!--ev.preventDefault();-->
+        <!--var data = ev.dataTransfer.getData("text");-->
+        <!--ev.target.appendChild(document.getElementById(data));-->
+    <!--}-->
+    <!--</script>-->
 
-<div style="width: 100%; ">
+    <div class="container" style="width: 100%; ">
 
-    <div style="width: 30%; float: left;">
-        <h2>
-            Nodes
-        </h2>
-        {% include "partials/nodes.html" %}
+        <div class="row" style="width: 30%; float: left;">
+            <h2>
+                Nodes
+            </h2>
+            {% include "partials/nodes.html" %}
+
+            <h3>
+                Download content
+            </h3>
+            <div>
+                <span class="col-sm">
+                    Json format:
+                </span>
+                <div class="col-sm">
+                    <a href="/get-file/{{pool_id}}" class="btn btn-primary active">Save</a>
+                </div>
+            </div>
+        </div>
+
+
+        <div class="row" style="margin-left:10%; width: 60%; float: left;">
+            <h2>
+                All entries
+            </h2>
+            {% include "partials/table.html" %}
+        </div>
     </div>
 
-
-    <div style="margin-left:10%; width: 60%; float: left;">
-        <h2>
-            All entries
-        </h2>
-        {% include "partials/table.html" %}
-    </div>
-</div>
-<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.9/angular.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.9/angular.min.js"></script>
 
 
 {% endblock%}

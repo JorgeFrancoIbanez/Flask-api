@@ -11,11 +11,11 @@ parser.add_argument('--node', metavar='N', type=int, default=2, help='Node id')
 args = parser.parse_args()
 u = User.query.filter(User.email == args.email).first()
 
-p = Post(message=args.message, user_id=u.id, node_id=args.node)
+p = Post(message=args.message,  node_id=args.node)
 db.session.add(p)
 db.session.commit()
 
-m = Post.query.filter(Post.user_id == u.id)
+m = Post.query.filter(Post.id == args.node)
 
 for i in m:
 
