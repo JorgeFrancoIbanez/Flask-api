@@ -9,7 +9,7 @@
         </thead>
         <tbody>
             {% for data_item in data_table %}
-                <tr id="sample" data-toggle="collapse" href="#multiCollapseExample-{{ data_item.id }}" role="button" aria-expanded="false" aria-controls="multiCollapseExample-{{ data_item.id }}">
+                <tr class="col-md-12" id="sample" data-toggle="collapse" href="#multiCollapseExample-{{ data_item.id }}" role="button" aria-expanded="false" aria-controls="multiCollapseExample-{{ data_item.id }}">
                     <td class="col-md-4">{{ data_item.id }}</td>
                     <td class="col-md-4">{{ data_item.timestamp }}</td>
                     <td class="col-md-4">{{ data_item.node_id}}</td>
@@ -21,4 +21,4 @@
         </tbody>
     </table>
 </div>
-{#<script>document.write('<script src="{{url_for('static', filename='js/table.js') }}">\x3C/script>')</script>#}
+<script>document.write('<script src="{{url_for('static', filename='js/table.js') }}">\x3C/script>')</script>
