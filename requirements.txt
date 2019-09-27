@@ -37,5 +37,5 @@ SQLAlchemy-ImageAttach==1.1.0
 subprocess32==3.2.7
 urllib3==1.22
 Wand==0.4.4
-Werkzeug==0.14.1
+Werkzeug==0.15.3
 WTForms==2.1
