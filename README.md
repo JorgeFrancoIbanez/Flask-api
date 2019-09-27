@@ -1,7 +1,3 @@
-# Flask-api
-Flask-api thesis
+# More info
 
-First install the requeriments file
-$ pip install -r requirements.txt
-
-Ref: https://pip.pypa.io/en/stable/reference/pip_freeze/
+https://ieeexplore.ieee.org/document/8587087
